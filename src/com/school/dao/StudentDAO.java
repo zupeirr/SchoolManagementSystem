@@ -15,7 +15,7 @@ public class StudentDAO {
              PreparedStatement pst = con.prepareStatement(sql)) {
 
             pst.setString(1, student.getName());
-            pst.setInt(2, student.getGrade());
+            pst.setString(2, student.getGrade()); // FIXED: setInt -> setString
             pst.setDouble(3, student.getFeesPaid());
             pst.executeUpdate();
             System.out.println("Student added successfully!");
@@ -36,7 +36,7 @@ public class StudentDAO {
                 students.add(new Student(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getInt("grade"),
+                        rs.getString("grade"), // FIXED: getInt -> getString
                         rs.getDouble("fees_paid")
                 ));
             }
@@ -46,14 +46,17 @@ public class StudentDAO {
         return students;
     }
 
-    public void updateStudent(int id, String name, int grade) {
-        String sql = "UPDATE students SET name=?, grade=? WHERE id=?";
+    // FIXED: Method signature changed to accept a Student object
+    // This fixes the error on line 95 of StudentFrame
+    public void updateStudent(Student student) {
+        String sql = "UPDATE students SET name=?, grade=?, fees_paid=? WHERE id=?";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
 
-            pst.setString(1, name);
-            pst.setInt(2, grade);
-            pst.setInt(3, id);
+            pst.setString(1, student.getName());
+            pst.setString(2, student.getGrade()); // FIXED: String type
+            pst.setDouble(3, student.getFeesPaid()); // ADDED: Update fees
+            pst.setInt(4, student.getId());
 
             if (pst.executeUpdate() > 0)
                 System.out.println("Student updated successfully!");
